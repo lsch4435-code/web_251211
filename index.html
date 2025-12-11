@@ -210,6 +210,16 @@
             background: rgba(255, 255, 255, 0.9);
         }
 
+        /* 프로젝트 카드 안의 링크 전체 클릭 가능하게 */
+        .project-card a.project-link {
+            display: block;
+            color: inherit;
+            height: 100%;
+        }
+        .project-card a.project-link:hover {
+            text-decoration: none;
+        }
+
         /* 스킬 그리드 */
         .skills-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .skill-card { text-align: center; font-weight: 600; font-size: 1.1rem; }
@@ -226,6 +236,7 @@
             justify-content: center;
             color: #777;
             transition: 0.5s;
+            font-weight: 600;
         }
         .project-card:hover .project-img { transform: scale(1.05); }
         .project-info { padding: 25px; background: rgba(255,255,255,0.4); flex-grow: 1; }
@@ -314,7 +325,7 @@
                     <div class="typing-text">저는 <span id="typewriter"></span><span class="typing-cursor"></span> 입니다.</div>
                     <p style="margin-bottom:30px; color:#555;">
                         AISW 전공으로 인공지능과 웹 개발을 공부하며,<br>
-                        사람에게 닿는 인터랙티브 경험과 미디어 아트를 만드는 것을 좋아합니다.
+                        사람 입장에서 다시 한 번 고민하는 웹 인터페이스를 만드는 것을 좋아합니다.
                     </p>
                     <a href="#projects" class="btn">프로젝트 보기</a>
                 </div>
@@ -329,10 +340,10 @@
                 <h2 class="section-title">About Me</h2>
                 <div style="background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); padding: 40px; border-radius: 20px; text-align: center; max-width: 800px; margin: 0 auto;">
                     <p style="font-size: 1.1rem; color: #444;">
-                        저는 AI Software를 전공하며, <strong>웹 프론트엔드</strong>와 <strong>미디어 아트</strong>에 관심을 가지고 있습니다.<br>
-                        사용자 입장에서 한 번 더 생각하고, 감정과 경험이 담긴 인터랙티브 화면을 만들어내는 것을 좋아합니다.<br>
-                        p5.js로 감각을 시각화하는 작업부터, HTML/CSS/JavaScript로 서비스 형태의 웹 페이지를 만드는 것까지<br>
-                        차근차근 실력을 쌓아가며 “웹 개발자 + 크리에이티브 코더”가 되는 것을 꿈꾸고 있습니다.
+                        저는 AI Software를 전공하며, <strong>웹 프론트엔드</strong>와 <strong>사용자 경험(UX)</strong>에 관심을 가지고 있습니다.<br>
+                        단순히 화면을 만드는 것을 넘어서, “이 버튼을 눌렀을 때 사용자가 어떻게 느낄까?”를 계속 고민합니다.<br>
+                        HTML/CSS/JavaScript를 활용해 작은 프로젝트들을 만들어 보면서<br>
+                        차근차근 실력을 쌓아가는 중입니다.
                     </p>
                 </div>
             </div>
@@ -363,8 +374,8 @@
                         Python & 기초 AI
                     </div>
                     <div class="skill-card">
-                        <i class="fas fa-paint-brush"></i>
-                        p5.js & 미디어 아트
+                        <i class="fab fa-git-alt" style="color:#f1502f;"></i>
+                        Git / GitHub & 기본 협업
                     </div>
                 </div>
             </div>
@@ -374,45 +385,70 @@
             <div class="container">
                 <h2 class="section-title">Projects</h2>
                 <div class="project-grid">
+                    <!-- 1. 타로/운세 웹페이지 -->
                     <article class="project-card">
-                        <div class="project-img">Menu Picker</div>
-                        <div class="project-info">
-                            <h3>오늘 뭐 먹지? 메뉴 추천기</h3>
-                            <p>
-                                사용자가 메뉴 종류 / 매운 정도 / 가격대를 선택하면<br>
-                                조건에 맞는 메뉴를 랜덤으로 추천해주는 웹 페이지입니다.
-                            </p>
-                            <div class="project-tags" style="margin-top:15px;">
-                                <span>#HTML</span><span>#CSS</span><span>#JavaScript</span>
+                        <a
+                            href="https://lsch4435-code.github.io/fortune-tarot/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="project-link"
+                        >
+                            <div class="project-img">Fortune Tarot</div>
+                            <div class="project-info">
+                                <h3>오늘의 운세 & 타로 카드 웹페이지</h3>
+                                <p>
+                                    사용자가 카드를 선택하면 오늘의 운세를 보여주는 타로 웹페이지입니다.<br>
+                                    간단한 애니메이션과 랜덤 결과를 통해 재미 요소를 더했습니다.
+                                </p>
+                                <div class="project-tags" style="margin-top:15px;">
+                                    <span>#HTML</span><span>#CSS</span><span>#JavaScript</span><span>#Random</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </article>
+
+                    <!-- 2. 포트폴리오 페이지 -->
                     <article class="project-card">
-                        <div class="project-img">AI Media Art</div>
-                        <div class="project-info">
-                            <h3>AI 미디어 아트: 별자리 & 로봇 우주</h3>
-                            <p>
-                                p5.js로 구현한 인터랙티브 미디어 아트 작품으로,<br>
-                                확장되는 별자리와 로봇/노트북 아이콘을 통해<br>
-                                개발자로서의 가능성과 AI 진로를 시각적으로 표현했습니다.
-                            </p>
-                            <div class="project-tags" style="margin-top:15px;">
-                                <span>#p5.js</span><span>#CreativeCoding</span><span>#AI</span>
+                        <a
+                            href="https://lsch4435-code.github.io/lsch4435.1234/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="project-link"
+                        >
+                            <div class="project-img">Portfolio Site</div>
+                            <div class="project-info">
+                                <h3>개인 포트폴리오 웹사이트</h3>
+                                <p>
+                                    GitHub Pages를 활용해 만든 개인 포트폴리오 사이트입니다.<br>
+                                    자기소개, 프로젝트, 연락처 등을 한 곳에 모아 정리했습니다.
+                                </p>
+                                <div class="project-tags" style="margin-top:15px;">
+                                    <span>#GitHubPages</span><span>#Portfolio</span><span>#Responsive</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </article>
+
+                    <!-- 3. 크리스마스 트리 꾸미기 -->
                     <article class="project-card">
-                        <div class="project-img">Christmas Tree</div>
-                        <div class="project-info">
-                            <h3>크리스마스 트리 꾸미기 웹페이지</h3>
-                            <p>
-                                눈 내리는 배경과 다양한 장식 아이콘을 활용해<br>
-                                사용자가 직접 트리를 꾸밀 수 있는 인터랙티브 페이지를 만들었습니다.
-                            </p>
-                            <div class="project-tags" style="margin-top:15px;">
-                                <span>#HTML</span><span>#CSS</span><span>#JavaScript</span><span>#UI/UX</span>
+                        <a
+                            href="https://christmastree-dccfb.web.app/index.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="project-link"
+                        >
+                            <div class="project-img">Christmas Tree</div>
+                            <div class="project-info">
+                                <h3>크리스마스 트리 꾸미기 웹페이지</h3>
+                                <p>
+                                    눈 내리는 배경과 여러 장식 요소를 활용해<br>
+                                    사용자가 직접 트리를 꾸며볼 수 있는 인터랙티브 페이지입니다.
+                                </p>
+                                <div class="project-tags" style="margin-top:15px;">
+                                    <span>#HTML</span><span>#CSS</span><span>#JavaScript</span><span>#Interaction</span>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </article>
                 </div>
             </div>
@@ -557,7 +593,7 @@
             const words = [
                 "AI Software 전공생",
                 "Web Developer 꿈나무",
-                "프론트엔드 & 미디어 아트 러버"
+                "프론트엔드 개발 공부 중"
             ];
             let wordIndex = 0;
             let charIndex = 0;
