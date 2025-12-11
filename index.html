@@ -186,7 +186,17 @@
             font-weight: bold;
             color: #aaa;
             animation: morph 8s ease-in-out infinite;
+            overflow: hidden; /* 이미지 튀어나오는 것 방지 */
         }
+
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;   /* 비율 유지하면서 꽉 채우기 */
+            border-radius: inherit;
+            display: block;
+        }
+
         /* 프로필 이미지 모양이 계속 변하는 애니메이션 */
         @keyframes morph {
             0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
@@ -330,7 +340,10 @@
                     <a href="#projects" class="btn">프로젝트 보기</a>
                 </div>
                 <div class="hero-image reveal">
-                    <div class="img-placeholder">Profile</div>
+                    <div class="img-placeholder">
+                        <!-- 여기 경로가 image 폴더 안의 profile.png -->
+                        <img src="image/profile.png" alt="이정진 프로필 사진" class="profile-img">
+                    </div>
                 </div>
             </div>
         </section>
