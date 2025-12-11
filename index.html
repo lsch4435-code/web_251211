@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 포트폴리오 | 이정진</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* [변수 설정] */
+        :root {
+            --primary-color: #ff6b9c;      /* 메인 핑크 */
+            --secondary-color: #ff3f7d;    /* 진한 핑크 */
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --header-height: 70px;
+        }
+
+        /* [기본 설정] */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            background-color: #ffeef4; /* 연한 핑크 배경색 */
+        }
+
+        /* [배경 캔버스] - 화면 뒤에 고정 */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #fff5f9 0%, #ffd6ea 100%); /* 핑크 그라데이션 */
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        .container { padding: 0 20px; margin: 0 auto; max-width: 1200px; }
+        .section { padding: 80px 0; position: relative; }
+        
+        /* [공통] 섹션 제목 스타일 */
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background: var(--primary-color);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* [헤더 - 글래스모피즘 적용] */
+        header {
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.7); /* 반투명 */
+            backdrop-filter: blur(10px); /* 블러 효과 */
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: var(--glass-border);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: -1px;
+        }
+
+        .nav-toggle { display: block; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); }
+
+        .nav-menu {
+            position: absolute;
+            top: var(--header-height);
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .nav-menu.active { display: block; animation: slideDown 0.3s ease forwards; }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-menu li { border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .nav-menu a { display: block; padding: 15px; font-weight: 500; text-align: center; }
+        .nav-menu a:hover { color: var(--primary-color); background: rgba(255, 107, 156, 0.12); }
+
+        /* [히어로 섹션] */
+        .hero {
+            margin-top: var(--header-height);
+            min-height: 90vh; /* 화면 꽉 차게 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .hero-text h2 { font-size: 2.5rem; margin-bottom: 15px; line-height: 1.2; }
+        .hero-text .highlight { color: var(--primary-color); position: relative; z-index: 1; }
+        /* 텍스트 뒤 형광펜 효과 */
+        .hero-text .highlight::before {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 182, 193, 0.35); /* 연핑크 형광펜 */
+            z-index: -1;
+        }
+        
+        .typing-text {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+            height: 1.5em; /* 높이 고정으로 흔들림 방지 */
+            font-weight: 500;
+        }
+        .typing-cursor { border-right: 2px solid var(--text-dark); animation: blink 0.7s infinite; }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 35px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 107, 156, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn:hover { background: var(--secondary-color); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(255, 107, 156, 0.6); }
+
+        .img-placeholder {
+            width: 220px;
+            height: 220px;
+            background: linear-gradient(45deg, #ffd6e8, #fff0f6); /* 연핑크 그라데이션 */
+            border-radius: 50%; /* 30% ~ 70% 랜덤 느낌 */
+            margin: 0 auto;
+            border: 5px solid white;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #aaa;
+            animation: morph 8s ease-in-out infinite;
+        }
+        /* 프로필 이미지 모양이 계속 변하는 애니메이션 */
+        @keyframes morph {
+            0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+        }
+
+        /* [카드 디자인 공통 - 글래스모피즘] */
+        .skill-card, .project-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .skill-card:hover, .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 스킬 그리드 */
+        .skills-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .skill-card { text-align: center; font-weight: 600; font-size: 1.1rem; }
+        .skill-card i { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+        /* 프로젝트 그리드 */
+        .project-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        .project-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+        .project-img {
+            height: 200px;
+            background: #ffe6f0; /* 연핑크 배경 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            transition: 0.5s;
+        }
+        .project-card:hover .project-img { transform: scale(1.05); }
+        .project-info { padding: 25px; background: rgba(255,255,255,0.4); flex-grow: 1; }
+        .project-tags span {
+            font-size: 0.8rem;
+            background: rgba(255, 107, 156, 0.08); /* 연핑크 태그 배경 */
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+        }
+
+        /* [스크롤 애니메이션용 클래스] */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 푸터 */
+        footer { background: #2c3e50; color: white; text-align: center; padding: 40px 0; margin-top: 50px; }
+        .social-links a { color: white; margin: 0 15px; font-size: 1.5rem; opacity: 0.7; }
+        .social-links a:hover { opacity: 1; transform: scale(1.1); }
+
+        /* [미디어 쿼리 - 태블릿] */
+        @media (min-width: 768px) {
+            .hero-content { flex-direction: row; text-align: left; }
+            .hero-text { flex: 1; padding-right: 30px; }
+            .hero-image { flex: 1; display: flex; justify-content: flex-end; }
+            .img-placeholder { width: 300px; height: 300px; margin: 0; }
+            
+            .skills-grid { grid-template-columns: repeat(3, 1fr); }
+            .project-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* [미디어 쿼리 - 데스크톱] */
+        @media (min-width: 1024px) {
+            .nav-toggle { display: none; }
+            .nav-menu {
+                position: static; display: block; width: auto;
+                background: none; border: none; box-shadow: none; backdrop-filter: none;
+            }
+            .nav-menu ul { display: flex; gap: 40px; }
+            .nav-menu li { border: none; }
+            .nav-menu a { padding: 0; position: relative; }
+            /* 메뉴 밑줄 효과 */
+            .nav-menu a::after {
+                content: ''; position: absolute; width: 0; height: 2px;
+                bottom: -5px; left: 0; background-color: var(--primary-color);
+                transition: width 0.3s;
+            }
+            .nav-menu a:hover { background: none; }
+            .nav-menu a:hover::after { width: 100%; }
+
+            .project-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas-bg"></canvas>
+
+    <header>
+        <div class="container">
+            <h1 class="logo">Jeongjin.dev</h1>
+            <button class="nav-toggle"><i class="fas fa-bars"></i></button>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <h2>안녕하세요,<br><span class="highlight">이정진</span> 입니다.</h2>
+                    <div class="typing-text">저는 <span id="typewriter"></span><span class="typing-cursor"></span> 입니다.</div>
+                    <p style="margin-bottom:30px; color:#555;">
+                        AISW 전공으로 인공지능과 웹 개발을 공부하며,<br>
+                        사람에게 닿는 인터랙티브 경험과 미디어 아트를 만드는 것을 좋아합니다.
+                    </p>
+                    <a href="#projects" class="btn">프로젝트 보기</a>
+                </div>
+                <div class="hero-image reveal">
+                    <div class="img-placeholder">Profile</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section reveal">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div style="background: rgba(255,255,255,0.5); backdrop-filter: blur(5px); padding: 40px; border-radius: 20px; text-align: center; max-width: 800px; margin: 0 auto;">
+                    <p style="font-size: 1.1rem; color: #444;">
+                        저는 AI Software를 전공하며, <strong>웹 프론트엔드</strong>와 <strong>미디어 아트</strong>에 관심을 가지고 있습니다.<br>
+                        사용자 입장에서 한 번 더 생각하고, 감정과 경험이 담긴 인터랙티브 화면을 만들어내는 것을 좋아합니다.<br>
+                        p5.js로 감각을 시각화하는 작업부터, HTML/CSS/JavaScript로 서비스 형태의 웹 페이지를 만드는 것까지<br>
+                        차근차근 실력을 쌓아가며 “웹 개발자 + 크리에이티브 코더”가 되는 것을 꿈꾸고 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section reveal">
+            <div class="container">
+                <h2 class="section-title">Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <i class="fab fa-html5" style="color:#e34c26;"></i>
+                        HTML5
+                    </div>
+                    <div class="skill-card">
+                        <i class="fab fa-css3-alt" style="color:#264de4;"></i>
+                        CSS3
+                    </div>
+                    <div class="skill-card">
+                        <i class="fab fa-js" style="color:#f7df1e;"></i>
+                        JavaScript
+                    </div>
+                    <div class="skill-card">
+                        <i class="fas fa-code"></i>
+                        C 언어 & 알고리즘 기초
+                    </div>
+                    <div class="skill-card">
+                        <i class="fab fa-python" style="color:#3776ab;"></i>
+                        Python & 기초 AI
+                    </div>
+                    <div class="skill-card">
+                        <i class="fas fa-paint-brush"></i>
+                        p5.js & 미디어 아트
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section reveal">
+            <div class="container">
+                <h2 class="section-title">Projects</h2>
+                <div class="project-grid">
+                    <article class="project-card">
+                        <div class="project-img">Menu Picker</div>
+                        <div class="project-info">
+                            <h3>오늘 뭐 먹지? 메뉴 추천기</h3>
+                            <p>
+                                사용자가 메뉴 종류 / 매운 정도 / 가격대를 선택하면<br>
+                                조건에 맞는 메뉴를 랜덤으로 추천해주는 웹 페이지입니다.
+                            </p>
+                            <div class="project-tags" style="margin-top:15px;">
+                                <span>#HTML</span><span>#CSS</span><span>#JavaScript</span>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="project-card">
+                        <div class="project-img">AI Media Art</div>
+                        <div class="project-info">
+                            <h3>AI 미디어 아트: 별자리 & 로봇 우주</h3>
+                            <p>
+                                p5.js로 구현한 인터랙티브 미디어 아트 작품으로,<br>
+                                확장되는 별자리와 로봇/노트북 아이콘을 통해<br>
+                                개발자로서의 가능성과 AI 진로를 시각적으로 표현했습니다.
+                            </p>
+                            <div class="project-tags" style="margin-top:15px;">
+                                <span>#p5.js</span><span>#CreativeCoding</span><span>#AI</span>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="project-card">
+                        <div class="project-img">Christmas Tree</div>
+                        <div class="project-info">
+                            <h3>크리스마스 트리 꾸미기 웹페이지</h3>
+                            <p>
+                                눈 내리는 배경과 다양한 장식 아이콘을 활용해<br>
+                                사용자가 직접 트리를 꾸밀 수 있는 인터랙티브 페이지를 만들었습니다.
+                            </p>
+                            <div class="project-tags" style="margin-top:15px;">
+                                <span>#HTML</span><span>#CSS</span><span>#JavaScript</span><span>#UI/UX</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Lee Jeongjin. All rights reserved.</p>
+            <div class="social-links" style="margin-top:20px;">
+                <!-- 여기 href에 나중에 본인 링크 넣기 -->
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:example@email.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            /* -------------------------------------------
+               1. 캔버스 배경 애니메이션 (움직이는 점과 선)
+               ------------------------------------------- */
+            const canvas = document.getElementById('canvas-bg');
+            const ctx = canvas.getContext('2d');
+            let particlesArray;
+
+            // 캔버스 크기 설정
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // 파티클 클래스
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
+                }
+                // 그리기
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = '#f8c3d8'; // 연핑크 점 색상
+                    ctx.fill();
+                }
+                // 위치 업데이트
+                update() {
+                    if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                    if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            // 파티클 초기화
+            function init() {
+                particlesArray = [];
+                let numberOfParticles = (canvas.height * canvas.width) / 9000; // 밀도 조절
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 3) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let directionX = (Math.random() * 0.4) - 0.2; // 속도
+                    let directionY = (Math.random() * 0.4) - 0.2;
+                    let color = '#f8c3d8';
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }
+            }
+
+            // 선 연결하기 (가까운 점끼리)
+            function connect() {
+                let opacityValue = 1;
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + 
+                                       ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < (canvas.width/7) * (canvas.height/7)) {
+                            opacityValue = 1 - (distance / 20000);
+                            ctx.strokeStyle = 'rgba(248, 179, 204,' + opacityValue + ')'; // 연핑크 선 색상
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            // 애니메이션 루프
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                connect();
+            }
+
+            // 리사이즈 대응
+            window.addEventListener('resize', () => {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                init();
+            });
+
+            init();
+            animate();
+
+
+            /* -------------------------------------------
+               2. 스크롤 시 요소 등장 애니메이션 (Scroll Reveal)
+               ------------------------------------------- */
+            const reveals = document.querySelectorAll('.reveal');
+
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+                const elementVisible = 150;
+
+                reveals.forEach((reveal) => {
+                    const elementTop = reveal.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - elementVisible) {
+                        reveal.classList.add('active');
+                    } else {
+                        // 필요하면 다시 숨길 수도 있음
+                        // reveal.classList.remove('active');
+                    }
+                });
+            }
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll(); // 초기 로드 시 실행
+
+
+            /* -------------------------------------------
+               3. 타이핑 효과 (Typewriter Effect)
+               ------------------------------------------- */
+            const textElement = document.getElementById('typewriter');
+            const words = [
+                "AI Software 전공생",
+                "Web Developer 꿈나무",
+                "프론트엔드 & 미디어 아트 러버"
+            ];
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function type() {
+                const currentWord = words[wordIndex];
+                
+                if (isDeleting) {
+                    textElement.textContent = currentWord.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    textElement.textContent = currentWord.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                if (!isDeleting && charIndex === currentWord.length) {
+                    isDeleting = true;
+                    setTimeout(type, 2000); // 단어 완성 후 대기 시간
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % words.length;
+                    setTimeout(type, 500);
+                } else {
+                    setTimeout(type, isDeleting ? 50 : 150); // 타이핑 속도
+                }
+            }
+            type();
+
+
+            /* -------------------------------------------
+               4. 모바일 메뉴 토글 (기존 기능 유지)
+               ------------------------------------------- */
+            const navToggle = document.querySelector('.nav-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                const icon = navToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+            
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        navMenu.classList.remove('active');
+                        navToggle.querySelector('i').classList.add('fa-bars');
+                        navToggle.querySelector('i').classList.remove('fa-times');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
